@@ -1,0 +1,163 @@
+initialization, this procedure encompasses and starts the game. 
+
+to master :colors :difficulty :dups
+ 
+local "secret
+
+local "guess
+
+local "score 
+
+make "secret  ifelse (:dups = "false) [choose.nodup :difficulty :colors] [choose.dup :difficulty :colors]
+
+make "score 1
+
+
+print [If you ever want to quit, just guess "quit". Hope you wont have to, good luck.]
+
+print [guess?]  
+
+
+make "guess readword 
+
+for [i 1 500] [ ( if :guess = :secret [print (sentence [good job! took you] :score "try) stop])
+
+(  if :guess = "quit  [stop] )
+
+( ifelse not valid.guessp :guess :secret :colors :difficulty :dups  
+
+[print [guess?] make "guess readword make "score :score+1] [ print sentence [exact 
+
+matches:] exact :guess :secret print sentence  [inexact matches:] inexact :guess :secret :colors  print [guess?] make "guess readword make "score 
+
+:score+1 ]) 
+
+
+( if :guess = :secret [print  (sentence [good job! took you] :score "trys) stop])
+
+
+(  if :guess = "quit  [stop] )
+
+
+]
+
+
+
+
+end
+
+
+
+;These subprocedures are in charge of randomly choosing the secret word from the designated colors in the right amount and 
+format.
+
+to choose.dup :difficulty :colors 
+
+output (cascade :difficulty [word (pick :colors) ?1] " )
+
+
+end
+
+
+
+
+to choose.nodup :difficulty :colors
+
+output (cascade :difficulty [ word (first ?2) ?1] "  [ ifelse (count ?2 )>1 [rotate bf ?2] [ ?2] ] rotate :colors)
+
+end
+
+
+
+
+
+to exact :guess :secret
+
+output count filter "truthseek  reduce "word  ( map "equalp (reduce "sentence :guess) (reduce "sentence :secret ))
+
+end
+
+
+
+
+
+to inexact :guess :secret :colors
+
+output (anymatch :guess :secret  :colors)-(exact :guess :secret)
+
+end
+
+
+
+
+
+to anymatch :guess :secret :colors
+
+output reduce "sum (map "smallerp (reduce "sentence map [howmany ? :guess] :colors)  (reduce "sentence map [howmany ? :secret] :colors))
+
+
+
+end
+
+
+
+
+
+to valid.guessp :guess :secret :colors :difficulty :dups
+
+if not equalp (count :guess) (count :secret)  [print (sentence [You must guess exactly] :difficulty "colors )  output "false]
+
+if memberp "f ( map [memberp ? :colors] :guess)  [print sentence [the available colors are:] :colors output "false]
+
+if and (equalp :dups "false) memberp "t  (map [ 1 < ? ] (map [howmany ? :guess] :colors)) ~
+[print [no fair guessing the same color twice!]output "false]
+
+
+output "true
+
+
+end
+
+
+
+
+to howmany :letter :word
+
+
+
+output count (map [ifelse equalp :letter (?)  [1] [" ] ] :word)
+
+
+
+
+end
+
+
+
+to rotate :colors
+
+output cascade random 6 [word bf ? (first ?) ] :colors
+
+
+end
+
+to truthseek :truths
+
+output memberp "t   :truths 
+
+end
+
+to smallerp :a :b
+
+
+
+output ifelse :a<:b [:a] [:b]
+
+
+end
+
+
+
+
+
+
